@@ -49,12 +49,10 @@ export const TicketList = () => {
       </button>
     </div>
     <article className="tickets">
-      {filteredTickets.map(ticket => {
+      {filteredTickets.map((ticket) => {
         return (
           <section className="ticket" key={ticket.id}>
-            <header className="ticket-info">
-              #{ticket.id}
-            </header>
+            <header className="ticket-info">#{ticket.id}</header>
             <div>{ticket.description}</div>
             <footer>
               <div>
