@@ -27,7 +27,8 @@ export const TicketList = () => {
     }
   }, [showEmergencyOnly, allTickets])
 
-  return <div className="tickets-container">
+  return (
+  <div className="tickets-container">
     <h2>Tickets</h2>
     <div>
       <button 
@@ -66,4 +67,5 @@ export const TicketList = () => {
       })}
     </article>
   </div>
+  )
 }
