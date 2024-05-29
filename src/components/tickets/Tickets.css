@@ -45,3 +45,15 @@
   .filter-btn {
     margin-right: 2rem;
   }
+
+  .ticket-search {
+    padding: .0375rem 0.75rem;
+    font-size: 1 rem;
+    border: 1 pix solid var(--outline);
+    border-radius: 0.25 rem;
+    margin-left: auto;
+  }
+  .filter-bar {
+    display: flex;
+  }
+  
