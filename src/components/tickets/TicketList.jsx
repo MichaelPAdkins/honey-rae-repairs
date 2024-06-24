@@ -1,54 +1,91 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import { getAllTickets } from "../../services/ticketService.jsx"
-import { Ticket } from "./Ticket.jsx";
-import "./Tickets.css";
-import { TicketFilterBar } from "./TicketFilterBar.jsx";
+import { Ticket } from "./Ticket.jsx"
+import { TicketFilterBar } from "./TicketFilterBar.jsx"
+import "./Tickets.css"
 
-export const TicketList = () => {
-  const [allTickets, setAllTickets] = useState([])
-  const [showEmergencyOnly, setShowEmergencyOnly] = useState(false)
-  const [filteredTickets, setFilteredTickets] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
 
-  // for tickets set
-  useEffect(() => {
-    getAllTickets().then((ticketsArray) => {
-      setAllTickets(ticketsArray);
-      console.log("tickets set!");
-    });
-  }, []); // ONLY runs on initial render of component
+export const TicketList = ({ currentUser }) => {
+    const [allTickets, setAllTickets] = useState([])
+    const [showEmergencyOnly, setShowEmergencyOnly] = useState(false)
+    const [showOpenOnly, setShowOpenOnly] = useState(false)
+    const [filteredTickets, setFilteredTickets] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
 
-// for show emergency only change and default all
-  useEffect(() => {
-    if (showEmergencyOnly) {
-      const emergencyTickets = allTickets.filter(
-        (ticket) => ticket.emergency === true
-      )
-      setFilteredTickets(emergencyTickets)
-    } else {
-      setFilteredTickets(allTickets)
+    const getAndSetTickets = () => {
+      getAllTickets().then((ticketsArray) => {
+        if (currentUser.isStaff) {
+          setAllTickets(ticketsArray)
+        } else {
+          const customerTickets = ticketsArray.filter(
+            (ticket) => ticket.userId === currentUser.id 
+          )
+          setAllTickets(customerTickets)
+        }
+      })
     }
-  }, [showEmergencyOnly, allTickets])
+  
+    useEffect(() => {
+      getAndSetTickets()
+    }, [currentUser]) // ONLY runs on initial render of component
+  
+    useEffect(() => {
+      if (showEmergencyOnly) {
+        const emergencyTickets = allTickets.filter((ticket) => ticket.emergency === true)
+        setFilteredTickets(emergencyTickets)
+      } else {
+        setFilteredTickets(allTickets)
+      }
+    }, [showEmergencyOnly, allTickets])
+    
+    useEffect(() => {
+      if (showOpenOnly) {
+        const openTickets = allTickets.filter((ticket) => ticket.dateCompleted === '')
+        setFilteredTickets(openTickets)
+      } else {
+        setFilteredTickets(allTickets)
+      }
+    }, [showOpenOnly, allTickets])
+    
+        useEffect(() => {
+          const foundTickets = allTickets.filter((ticket) =>
+             ticket.description.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          setFilteredTickets(foundTickets)
+        }, [searchTerm, allTickets])
 
-  useEffect(() => {
-    const foundTickets = allTickets.filter((ticket) => 
-      ticket.description.toLowerCase().includes(searchTerm.toLowerCase())
+    useEffect(() => {
+      if (showOpenOnly) {
+        const openTickets = allTickets.filter(
+          (ticket) => ticket.dateCompleted === ""
+        ) 
+        setFilteredTickets(openTickets)
+      } else {
+        setFilteredTickets(allTickets)
+      }
+    }, [showOpenOnly, allTickets])
+    
+    return (
+      <div className="tickets-container">
+        <h2>Tickets</h2>
+        <TicketFilterBar
+          setShowEmergencyOnly={setShowEmergencyOnly} 
+          setShowOpenOnly={setShowOpenOnly}
+          setSearchTerm={setSearchTerm}
+          currentUser={currentUser}
+        />
+        <article className="tickets">
+          {filteredTickets.map((ticketObj) => {
+            return (
+              <Ticket 
+                ticket={ticketObj} 
+                currentUser={currentUser} 
+                getAndSetTickets={getAndSetTickets} 
+                key={ticketObj.id}
+              />
+            )
+          })}
+        </article>
+      </div>
     )
-    setFilteredTickets(foundTickets) 
-  }, [searchTerm, allTickets])
-
-  return (
-  <div className="tickets-container">
-    <h2>Tickets</h2>
-    <TicketFilterBar 
-      setShowEmergencyOnly={setShowEmergencyOnly} 
-      setSearchTerm={setSearchTerm}
-    />
-    <article className="tickets">
-      {filteredTickets.map((ticketObj) => {
-        return <Ticket ticket={ticketObj} key={ticketObj.id} />
-      })}
-    </article>
-  </div>
-  )
 }

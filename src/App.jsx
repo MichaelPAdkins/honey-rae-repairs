@@ -6,8 +6,11 @@ import { NavBar } from "./components/nav/NavBar.jsx";
 import { TicketList } from "./components/tickets/TicketList.jsx"
 import { Routes, Route, Outlet } from "react-router-dom"
 import { Welcome } from "./components/welcome/Welcome.jsx"
+import { EmployeeDetails } from "./components/employees/EmployeeDetails.jsx"
+import { CustomerDetails } from "./components/customers/CustomersDetails.jsx";
 import { Login } from "./components/auth/Login"
 import { Register } from "./components/auth/Register.jsx"
+
 
 export const App = () => {
   return ( 
